@@ -7,10 +7,19 @@
 }
 
 .app_header {
+  position: sticky;
+  background-color: white;
+  top: 0;
+  z-index: 1;
   align-items: center;
   display: flex;
   justify-content: space-between;
   padding: 20px;
   object-fit: contain;
   border-bottom: 2px solid black;
+}
+
+.app_signup {
+  display: flex;
+  flex-direction: column;
 }
