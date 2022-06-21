@@ -173,15 +173,28 @@ function App() {
         user?.displayName ?
         (<ImageUpload username={user.displayName}/>)
         :
-        (<h3>Sorry you need to login to upload</h3>)
+        (<h3>Sign in to upload images</h3>)
       }
-      <div className='app_images'>
-        {
-          images.map(({id, image}) =>(
-            <Images key={id} imageId={id} user={user} author={image.author} createdAt={image.createdAt} imageUrl={image.imageUrl} />
-          ))
-        }
-      </div>
+      {
+        user ?
+        (
+          <div className='app_images'>
+            {
+              images.map(({id, image}) =>(
+                <Images key={id} imageId={id} user={user} author={image.author} createdAt={image.createdAt} imageUrl={image.imageUrl} />
+              ))
+            }
+          </div>
+        ) :
+        (null)
+      }
+      {/* // <div className='app_images'>
+      //   {
+      //     images.map(({id, image}) =>(
+      //       <Images key={id} imageId={id} user={user} author={image.author} createdAt={image.createdAt} imageUrl={image.imageUrl} />
+      //     ))
+      //   }
+      // </div> */}
 
     </div>
   );

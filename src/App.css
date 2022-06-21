@@ -16,10 +16,14 @@
   justify-content: space-between;
   padding: 20px;
   object-fit: contain;
-  border-bottom: 2px solid black;
+  border-bottom: 2px solid orange;
 }
 
 .app_signup {
   display: flex;
   flex-direction: column;
+}
+
+h3 {
+  text-align: center;
 }
