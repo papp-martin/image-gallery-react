@@ -181,21 +181,13 @@ function App() {
           <div className='app_images'>
             {
               images.map(({id, image}) =>(
-                <Images key={id} imageId={id} user={user} author={image.author} createdAt={image.createdAt} imageUrl={image.imageUrl} />
+                <Images key={id} imageId={id} user={user} author={image.author} createdAt={image.createdAt} imageUrl={image.imageUrl} images={images} setImages={setImages}/>
               ))
             }
           </div>
         ) :
         (null)
       }
-      {/* // <div className='app_images'>
-      //   {
-      //     images.map(({id, image}) =>(
-      //       <Images key={id} imageId={id} user={user} author={image.author} createdAt={image.createdAt} imageUrl={image.imageUrl} />
-      //     ))
-      //   }
-      // </div> */}
-
     </div>
   );
 }
