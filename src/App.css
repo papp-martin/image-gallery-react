@@ -2,9 +2,9 @@
   margin: 0;
 }
 
-.app {
+/* .App {
   height: 100vh;
-}
+} */
 
 .app_header {
   position: sticky;
@@ -19,10 +19,22 @@
   border-bottom: 2px solid orange;
 }
 
+.images_conatiner {
+  display: flex;
+  flex-direction: column;
+}
+
+.images {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-gap: 20px;
+}
+
 .app_signup {
   display: flex;
   flex-direction: column;
 }
+
 
 h3 {
   text-align: center;

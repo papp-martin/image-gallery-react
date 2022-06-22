@@ -175,19 +175,21 @@ function App() {
         :
         (<h3>Sign in to upload images</h3>)
       }
-      {
-        user ?
-        (
-          <div className='app_images'>
-            {
-              images.map(({id, image}) =>(
-                <Images key={id} imageId={id} user={user} author={image.author} createdAt={image.createdAt} imageUrl={image.imageUrl} images={images} setImages={setImages}/>
-              ))
-            }
-          </div>
-        ) :
-        (null)
-      }
+      <div className='images_container'>
+        {
+          user ?
+          (
+            <div className='images'>
+                {
+                  images.map(({id, image}) =>(
+                      <Images key={id} imageId={id} user={user} author={image.author} createdAt={image.createdAt} imageUrl={image.imageUrl} images={images} setImages={setImages}/>
+                  ))
+                }
+            </div>
+          ) :
+          (null)
+        }
+      </div>
     </div>
   );
 }
