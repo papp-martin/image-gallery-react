@@ -64,7 +64,7 @@ function App() {
   }, [user, username]);
 
   useEffect(() => {
-    db.collection('images').onSnapshot(snapshot => {
+    db.collection('images').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
       setImages(snapshot.docs.map(doc => ({
         id: doc.id,
         image: doc.data()
@@ -171,7 +171,7 @@ function App() {
       </div>
       {
         user?.displayName ?
-        (<ImageUpload username={user.displayName}/>)
+        (<ImageUpload username={user.displayName} images={images}/>)
         :
         (<h3>Sign in to upload images</h3>)
       }
@@ -182,7 +182,7 @@ function App() {
             <div className='images'>
                 {
                   images.map(({id, image}) =>(
-                      <Images key={id} imageId={id} user={user} author={image.author} createdAt={image.createdAt} imageUrl={image.imageUrl} images={images} setImages={setImages}/>
+                      <Images key={id} imageId={id} user={user} author={image.author} createdAt={image.createdAt} imageUrl={image.imageUrl} images={images} setImages={setImages} index={image.index}/>
                   ))
                 }
             </div>

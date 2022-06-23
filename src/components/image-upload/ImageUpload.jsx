@@ -4,7 +4,7 @@ import { storage, db } from '../../firebase/firebase.utils';
 import firebase from 'firebase/compat/app';
 import './ImageUpload.css';
 
-function ImageUpload({username}) {
+function ImageUpload({username, images}) {
     const [image, setImage] = useState(null);
     const [progress, setProgress] = useState(0);
 
@@ -41,7 +41,8 @@ function ImageUpload({username}) {
                         db.collection("images").add({
                             createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                             imageUrl: url,
-                            author: username
+                            author: username,
+                            index: images.length
                         });
 
                         setProgress(0);
