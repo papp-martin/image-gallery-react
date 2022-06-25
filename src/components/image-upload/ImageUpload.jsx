@@ -2,11 +2,14 @@ import React, {useState} from 'react';
 import { Button } from '@material-ui/core';
 import { storage, db } from '../../firebase/firebase.utils';
 import firebase from 'firebase/compat/app';
+import { useSelector } from 'react-redux';
 import './ImageUpload.css';
 
-function ImageUpload({username, images}) {
+function ImageUpload({ images }) {
     const [image, setImage] = useState(null);
     const [progress, setProgress] = useState(0);
+
+    const user = useSelector(state => state.user);
 
     const handleChange = event =>  {
         if(event.target.files[0]) {
@@ -41,7 +44,7 @@ function ImageUpload({username, images}) {
                         db.collection("images").add({
                             createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                             imageUrl: url,
-                            author: username,
+                            author: user.currentUser.displayName,
                             index: images.length
                         });
 

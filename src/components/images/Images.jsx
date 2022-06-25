@@ -7,6 +7,7 @@ import Modal from '@material-ui/core/Modal';
 import './images.css';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import SwiperCore, { Navigation, Pagination, Scrollbar, A11y, Autoplay } from 'swiper';
+import { useSelector } from 'react-redux';
 import 'swiper/swiper.scss';
 import 'swiper/components/navigation/navigation.scss';
 import 'swiper/components/pagination/pagination.scss';
@@ -37,9 +38,11 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function Images({ imageId, author, createdAt, imageUrl, user, images, setImages }) {
+function Images({ imageId, author, createdAt, imageUrl, images, setImages }) {
   const [comments, setComments] = useState([]);
   const [comment, setComment] = useState('');
+
+  const user = useSelector(state => state.user);
 
   const classes = useStyles();
   const [modalStyle] = useState(getModalStyle);
@@ -73,7 +76,7 @@ function Images({ imageId, author, createdAt, imageUrl, user, images, setImages 
 
     db.collection('images').doc(imageId).collection('comments').add({
         text: comment,
-        author: user.displayName,
+        author: user.currentUser.displayName,
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
     setComment('');
@@ -127,7 +130,7 @@ function Images({ imageId, author, createdAt, imageUrl, user, images, setImages 
         <div className='image_footer'>
             <h4>Author: {author}</h4>
             {
-                (author === user.displayName) ?
+                (author === user.currentUser.displayName) ?
                 (
                     <button type='button' onClick={() => handleDelete(imageId)}>
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
@@ -138,7 +141,7 @@ function Images({ imageId, author, createdAt, imageUrl, user, images, setImages 
                 ) :
                 (null)
             }
-            <span>{createdAt.toDate().toDateString()}</span>
+            <span>{createdAt?.toDate().toDateString()}</span>
         </div>
         <div className='post_comments'>
             {comments.map((comment) => (
@@ -153,7 +156,6 @@ function Images({ imageId, author, createdAt, imageUrl, user, images, setImages 
                 type="text"
                 placeholder='Add a comment'
                 value={comment}
-                disabled={!user}
                 onChange={(e) => setComment(e.target.value)}
             />
             <button 

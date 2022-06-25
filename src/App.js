@@ -8,6 +8,10 @@ import Modal from '@material-ui/core/Modal';
 import Button from '@material-ui/core/Button';
 import { Input } from '@material-ui/core';
 import ImageUpload from './components/image-upload/ImageUpload';
+import { useSelector, useDispatch } from 'react-redux';
+import { setOpenSignUp } from './actions/actions';
+import { setOpenSignIn } from './actions/actions';
+import { setCurrentUser } from './actions/actions';
 
 function getModalStyle() {
   const top = 50;
@@ -38,9 +42,11 @@ function App() {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [user, setUser] = useState(null);
-  const [open, setOpen] = useState(false);
-  const [openSignIn, setOpenSignIn] = useState(false);
+
+  const openSignUp = useSelector(state => state.openSignUp);
+  const openSignIn = useSelector(state => state.openSignIn);
+  const user = useSelector(state => state.user);
+  const dispatch = useDispatch();
 
   const [images, setImages] = useState([]);
 
@@ -50,9 +56,9 @@ function App() {
       if (authUser) {
         //user logged in
         console.log(authUser);
-        setUser(authUser);
+        dispatch(setCurrentUser(authUser));
       } else {
-        setUser(null);
+        dispatch(setCurrentUser(null));
         //user logged out
       }
 
@@ -61,7 +67,7 @@ function App() {
     return () => {
       unsubscribe();
     }
-  }, [user, username]);
+  }, []);
 
   useEffect(() => {
     db.collection('images').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
@@ -81,9 +87,9 @@ function App() {
         displayName: username,
       })
     })
-    .catch((error) => alert(error.message))
+    .catch((error) => alert(error.message));
 
-    setOpen(false);
+    dispatch(setOpenSignUp(false));
   };
 
   const signIn = (event) => {
@@ -92,15 +98,17 @@ function App() {
     auth.signInWithEmailAndPassword(email, password)
     .catch((error) => alert(error.message))
 
-    setOpenSignIn(false);
+    dispatch(setOpenSignIn(false));
   };
+
+  console.log(images);
 
 
   return (
     <div className="App">
       <Modal
-        open={open}
-        onClose={() => setOpen(false)}
+        open={openSignUp}
+        onClose={() => dispatch(setOpenSignUp(false))}
       >
         <div style={modalStyle} className={classes.paper}>
           <form className='app_signup'>
@@ -131,7 +139,7 @@ function App() {
       </Modal>
       <Modal
         open={openSignIn}
-        onClose={() => setOpenSignIn(false)}
+        onClose={() => dispatch(setOpenSignIn(false))}
       >
         <div style={modalStyle} className={classes.paper}>
           <form className='app_signup'>
@@ -158,31 +166,31 @@ function App() {
         <Logo className='logo' />
         <h1>Image Gallery</h1>
         {
-          user ?
+          user.currentUser ?
           (<Button onClick={() => auth.signOut()}>Logout</Button>)
           :
           (
             <div className='app_loginContainer'>
-              <Button onClick={() => setOpenSignIn(true)}>Sign In</Button>
-              <Button onClick={() => setOpen(true)}>Sign Up</Button>
+              <Button onClick={() => dispatch(setOpenSignIn())}>Sign In</Button>
+              <Button onClick={() => dispatch(setOpenSignUp())}>Sign Up</Button>
             </div>
           )
         }
       </div>
       {
-        user?.displayName ?
-        (<ImageUpload username={user.displayName} images={images}/>)
+        user.currentUser?.displayName ?
+        (<ImageUpload images={images} />)
         :
         (<h3>Sign in to upload images</h3>)
       }
       <div className='images_container'>
         {
-          user ?
+          user.currentUser ?
           (
             <div className='images'>
                 {
                   images.map(({id, image}) =>(
-                      <Images key={id} imageId={id} user={user} author={image.author} createdAt={image.createdAt} imageUrl={image.imageUrl} images={images} setImages={setImages} index={image.index}/>
+                    <Images key={id} imageId={id} author={image.author} createdAt={image.createdAt} imageUrl={image.imageUrl} images={images} setImages={setImages} index={image.index}/>
                   ))
                 }
             </div>
