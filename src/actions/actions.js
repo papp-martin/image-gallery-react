@@ -16,3 +16,10 @@ export const setCurrentUser = user => {
         payload: user
     };
 };
+
+export const updateImages = images => {
+    return {
+        type: 'UPDATE_IMAGES',
+        payload: images
+    };
+};

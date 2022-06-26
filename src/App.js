@@ -12,6 +12,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { setOpenSignUp } from './actions/actions';
 import { setOpenSignIn } from './actions/actions';
 import { setCurrentUser } from './actions/actions';
+import { updateImages } from './actions/actions';
 
 function getModalStyle() {
   const top = 50;
@@ -36,6 +37,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function App() {
+  //modal
   const classes = useStyles();
   const [modalStyle] = useState(getModalStyle);
 
@@ -43,12 +45,14 @@ function App() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
+  
+  //states with redux
   const openSignUp = useSelector(state => state.openSignUp);
   const openSignIn = useSelector(state => state.openSignIn);
   const user = useSelector(state => state.user);
+  const images = useSelector(state => state.images.images);
   const dispatch = useDispatch();
 
-  const [images, setImages] = useState([]);
 
 
   useEffect(() => {
@@ -71,10 +75,10 @@ function App() {
 
   useEffect(() => {
     db.collection('images').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
-      setImages(snapshot.docs.map(doc => ({
+      dispatch(updateImages((snapshot.docs.map(doc => ({
         id: doc.id,
         image: doc.data()
-      })));
+      })))));
     })
   }, []);
 
@@ -100,8 +104,6 @@ function App() {
 
     dispatch(setOpenSignIn(false));
   };
-
-  console.log(images);
 
 
   return (
@@ -179,7 +181,7 @@ function App() {
       </div>
       {
         user.currentUser?.displayName ?
-        (<ImageUpload images={images} />)
+        (<ImageUpload />)
         :
         (<h3>Sign in to upload images</h3>)
       }
@@ -190,7 +192,7 @@ function App() {
             <div className='images'>
                 {
                   images.map(({id, image}) =>(
-                    <Images key={id} imageId={id} author={image.author} createdAt={image.createdAt} imageUrl={image.imageUrl} images={images} setImages={setImages} index={image.index}/>
+                    <Images key={id} imageId={id} author={image.author} createdAt={image.createdAt} imageUrl={image.imageUrl} />
                   ))
                 }
             </div>

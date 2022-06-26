@@ -5,11 +5,12 @@ import firebase from 'firebase/compat/app';
 import { useSelector } from 'react-redux';
 import './ImageUpload.css';
 
-function ImageUpload({ images }) {
+function ImageUpload() {
     const [image, setImage] = useState(null);
     const [progress, setProgress] = useState(0);
 
     const user = useSelector(state => state.user);
+    const images = useSelector(state => state.images.images);
 
     const handleChange = event =>  {
         if(event.target.files[0]) {
@@ -36,12 +37,11 @@ function ImageUpload({ images }) {
             () => {
                 //complete function
                 storage
-                    .ref("images")
+                    .ref('images')
                     .child(image.name)
                     .getDownloadURL()
                     .then(url => {
-                        //post image inside db
-                        db.collection("images").add({
+                        db.collection('images').add({
                             createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                             imageUrl: url,
                             author: user.currentUser.displayName,

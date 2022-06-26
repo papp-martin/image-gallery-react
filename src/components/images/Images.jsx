@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import { db } from '../../firebase/firebase.utils';
 import firebase from "firebase/compat/app";
 import { doc, deleteDoc } from 'firebase/firestore';
@@ -7,10 +7,11 @@ import Modal from '@material-ui/core/Modal';
 import './images.css';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import SwiperCore, { Navigation, Pagination, Scrollbar, A11y, Autoplay } from 'swiper';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import 'swiper/swiper.scss';
 import 'swiper/components/navigation/navigation.scss';
 import 'swiper/components/pagination/pagination.scss';
+import { updateImages } from '../../actions/actions';
 
 SwiperCore.use([Navigation, Pagination, Scrollbar, A11y, Autoplay]);
 
@@ -38,18 +39,24 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function Images({ imageId, author, createdAt, imageUrl, images, setImages }) {
+function Images({ imageId, author, createdAt, imageUrl }) {
   const [comments, setComments] = useState([]);
   const [comment, setComment] = useState('');
-
-  const user = useSelector(state => state.user);
-
-  const classes = useStyles();
-  const [modalStyle] = useState(getModalStyle);
   const [openimg, setOpenimg] = useState(false);
 
 
-  //console.log(index,"index");
+  //states with redux
+  const user = useSelector(state => state.user);
+  const images = useSelector(state => state.images.images);
+  const imagesPagination = useSelector(state => state.images.images);
+  const dispatch = useDispatch();
+
+  //modal
+  const classes = useStyles();
+  const [modalStyle] = useState(getModalStyle);
+
+
+  let actualId = useRef(0);
 
 
   useEffect(() => {
@@ -85,15 +92,29 @@ function Images({ imageId, author, createdAt, imageUrl, images, setImages }) {
   const handleDelete = async (id) => {
     try {
         await deleteDoc(doc(db, 'images', id))
-        setImages(images.filter((image) => image.id !== id));
+        dispatch(updateImages((images.filter((image) => image.id !== id))));
     } catch (error) {
         console.log(error);
     }
   };
 
-  const handleClick = () => {
+
+
+  const handleClick = (id) => {
+    actualId.current = id;
     setOpenimg(true);
   };
+
+  
+  const getImageById = (id) => {
+    for(let i = 0; i < images.length; i++){
+        if(images[i].id == id.current.imageId){
+            return images[i];
+        }
+    }
+  };
+
+
 
   return (
     <div className='post'>
@@ -114,19 +135,22 @@ function Images({ imageId, author, createdAt, imageUrl, images, setImages }) {
                         disableOnInteraction: false
                     }}
                 >
-                    {
-                        images.map(({image}) => {
-                            return(
-                                <SwiperSlide key={image.index}>
-                                    <img key={image.id} className='modal-image' src={image.imageUrl} alt='image' />
-                                </SwiperSlide>
-                            )
+              
+                    {    
+                        images.slice(images.indexOf(getImageById(actualId)))
+                                .concat(imagesPagination.slice(0, imagesPagination.indexOf(getImageById(actualId)))).map(({image}) => {
+                                    return(
+                                        <SwiperSlide key={image.index}>
+                                            <img key={image.id} className='modal-image' src={image.imageUrl} alt='image' />
+                                        </SwiperSlide>
+                                    )
+                            
                         })
                     }
                 </Swiper>
             </div>
         </Modal>
-        <div className='image' onClick={handleClick} style={{backgroundImage: `url(${imageUrl})`}} />
+        <div className='image' onClick={() => handleClick({imageId})} style={{backgroundImage: `url(${imageUrl})`}} />
         <div className='image_footer'>
             <h4>Author: {author}</h4>
             {
